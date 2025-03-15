@@ -2,7 +2,7 @@
 
 [![NixOS](https://img.shields.io/badge/NixOS-supported-blue.svg)](https://nixos.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![flake_check](https://github.com/Rishabh5321/thorium_nix/actions/workflows/flake_check.yml/badge.svg)](https://github.com/Rishabh5321/thorium_nix/actions/workflows/flake_check.yml)
+[![flake_check](https://github.com/Rishabh5321/thorium_flake/actions/workflows/flake_check.yml/badge.svg)](https://github.com/Rishabh5321/thorium_flake/actions/workflows/flake_check.yml)
 
 
 Thorium Nix Flake Documentation
@@ -32,16 +32,16 @@ You can install this flake directly in declarative meathod.
 
 ```bash
 # For AVX2 (modern CPUs)
-nix profile install github:Rishabh5321/thorium_nix#thorium-avx2
+nix profile install github:Rishabh5321/thorium_flake#thorium-avx2
 
 # For AVX (older CPUs)
-nix profile install github:Rishabh5321/thorium_nix#thorium-avx
+nix profile install github:Rishabh5321/thorium_flake#thorium-avx
 
 # For SSE4 (legacy CPUs)
-nix profile install github:Rishabh5321/thorium_nix#thorium-sse4
+nix profile install github:Rishabh5321/thorium_flake#thorium-sse4
 
 # For SSE3 (very old CPUs)
-nix profile install github:Rishabh5321/thorium_nix#thorium-sse3
+nix profile install github:Rishabh5321/thorium_flake#thorium-sse3
 ```
 
 ### Integrating with NixOS declaratively.
@@ -54,7 +54,7 @@ nix profile install github:Rishabh5321/thorium_nix#thorium-sse3
    {
      inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # Note that nixos unstable channel is required
-        thorium.url = "github:Rishabh5321/thorium_nix";
+        thorium.url = "github:Rishabh5321/thorium_flake";
      };
 
      outputs = { self, nixpkgs }: {
