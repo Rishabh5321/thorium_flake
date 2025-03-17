@@ -32,7 +32,7 @@ jobs:
       - name: Run flake install and capture logs
         id: flake_install
         run: |
-          nix profile install .#thorium-avx2 2>&1 | tee flake_install.log || true
+          nix profile install . 2>&1 | tee flake_install.log || true
           grep -E "(warning:|error:)" flake_install.log > flake_install_filtered.log || echo "No warnings or errors." > flake_install_filtered.log
           echo "flake_install_log=$(jq -Rs . < flake_install_filtered.log)" >> $GITHUB_ENV
 
@@ -50,20 +50,20 @@ jobs:
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: |
           BRANCH_NAME="${{ github.ref_name }}"
-          FLAKE_CHECK_LOG=$(echo "$flake_check_log" | sed ':a;N;$!ba;s/\n/\\n/g')
-          FLAKE_INSTALL_LOG=$(echo "$flake_install_log" | sed ':a;N;$!ba;s/\n/\\n/g')
+          REPO_NAME="${{ github.repository }}"
+          FLAKE_CHECK_LOG=$(cat flake_check_filtered.log | perl -pe 's/\n/%0A/g')
+          FLAKE_INSTALL_LOG=$(cat flake_install_filtered.log | perl -pe 's/\n/%0A/g')
 
           if [[ "${{ job.status }}" == "success" ]]; then
-            MESSAGE="✅ Flake check for Rishabh5321/thorium-flake completed successfully on branch $BRANCH_NAME."
+            MESSAGE="✅ Flake check for $REPO_NAME completed successfully on branch $BRANCH_NAME."
           else
-            MESSAGE="❌ Flake check for Rishabh5321/thorium-flake failed on branch $BRANCH_NAME. Check GitHub Actions for details."
+            MESSAGE="❌ Flake check for $REPO_NAME failed on branch $BRANCH_NAME. Check GitHub Actions for details."
           fi
 
-          # Truncate logs to fit Telegram's message limit (4096 characters)
-          FLAKE_CHECK_LOG_TRUNCATED=$(echo "$FLAKE_CHECK_LOG" | cut -c -2000)
-          FLAKE_INSTALL_LOG_TRUNCATED=$(echo "$FLAKE_INSTALL_LOG" | cut -c -2000)
+          MESSAGE+="%0A%0A<b>Flake Check Log:</b>%0A<pre>$FLAKE_CHECK_LOG</pre>"
+          MESSAGE+="%0A%0A<b>Flake Install Log:</b>%0A<pre>$FLAKE_INSTALL_LOG</pre>"
 
-          # Send the message with logs
-          curl -s -X POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage \
-            -d chat_id=$CHAT_ID \
-            -d text="$MESSAGE%0A%0AFlake Check Log:%0A$FLAKE_CHECK_LOG_TRUNCATED%0A%0AFlake Install Log:%0A$FLAKE_INSTALL_LOG_TRUNCATED"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" \
+            -d "chat_id=$CHAT_ID" \
+            -d "text=$MESSAGE" \
+            -d "parse_mode=HTML"
