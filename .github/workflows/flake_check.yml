@@ -32,7 +32,7 @@ jobs:
       - name: Run flake install and capture logs
         id: flake_install
         run: |
-          nix profile install . 2>&1 | tee flake_install.log || true
+          nix profile install .#thorium-avx2 2>&1 | tee flake_install.log || true
           grep -E "(warning:|error:)" flake_install.log > flake_install_filtered.log || echo "No warnings or errors." > flake_install_filtered.log
           echo "flake_install_log=$(jq -Rs . < flake_install_filtered.log)" >> $GITHUB_ENV
 
