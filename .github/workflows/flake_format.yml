@@ -8,8 +8,6 @@ on:
       - 'main'
     tags-ignore:
       - 'update'
-  schedule:
-    - cron: '0 */12 * * *'
 
 jobs:
   nix-format-lint:
