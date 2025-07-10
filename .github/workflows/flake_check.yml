@@ -22,77 +22,50 @@ jobs:
             auto-optimise-store = true
             experimental-features = nix-command flakes
             download-buffer-size = 500000000
-            
+
       - name: Setup Cachix
         uses: cachix/cachix-action@v16
         with:
           name: rishabh5321
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
       - name: Run flake check and capture logs
         id: flake_check
         run: |
-          set +e  # Don't exit immediately on error
-          nix flake check 2>&1 | tee flake_check.log
-          if grep -E "(warning:|error:)" flake_check.log > flake_check_filtered.log; then
-            echo "FLAKE_CHECK_STATUS=failed" >> $GITHUB_ENV
-            echo "WORKFLOW_SHOULD_FAIL=true" >> $GITHUB_ENV
-          else
-            echo "No warnings or errors." > flake_check_filtered.log
-            echo "FLAKE_CHECK_STATUS=passed" >> $GITHUB_ENV
-          fi
+          nix flake check
 
       - name: Run flake install and capture logs
-        id: flake_install
+        id: flake_install_avx
         run: |
-          set +e  # Don't exit immediately on error
-          nix profile install .#thorium-avx2 2>&1 | tee flake_install.log
-          if grep -E "(warning:|error:)" flake_install.log > flake_install_filtered.log; then
-            echo "FLAKE_INSTALL_STATUS=failed" >> $GITHUB_ENV
-            echo "WORKFLOW_SHOULD_FAIL=true" >> $GITHUB_ENV
-          else
-            echo "No warnings or errors." > flake_install_filtered.log
-            echo "FLAKE_INSTALL_STATUS=passed" >> $GITHUB_ENV
-          fi
+          nix profile install .#thorium-avx
 
-      - name: Debug Logs
+      - name: Remove thorium-avx profile
         run: |
-          echo "Flake Check Log:"
-          cat flake_check_filtered.log
-          echo "Flake Install Log:"
-          cat flake_install_filtered.log
+          nix profile remove .#thorium-avx
 
-      - name: Send Telegram Notification
-        if: always()
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
+      - name: Run flake install and capture logs
+        id: flake_install_avx2
         run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-          REPO_NAME="${{ github.repository }}"
-          FLAKE_CHECK_LOG=$(cat flake_check_filtered.log | head -15 | perl -pe 's/\n/%0A/g')
-          FLAKE_INSTALL_LOG=$(cat flake_install_filtered.log | head -15 | perl -pe 's/\n/%0A/g')
-          
-          # Build status message based on our environment variables
-          if [[ "${{ env.FLAKE_CHECK_STATUS }}" == "passed" && "${{ env.FLAKE_INSTALL_STATUS }}" == "passed" ]]; then
-            MESSAGE="✅ Flake checks for $REPO_NAME completed successfully on branch $BRANCH_NAME."
-          else
-            # Use specific emojis for each check
-            CHECK_EMOJI="${{ env.FLAKE_CHECK_STATUS == 'passed' && '✅' || '❌' }}"
-            INSTALL_EMOJI="${{ env.FLAKE_INSTALL_STATUS == 'passed' && '✅' || '❌' }}"
-            MESSAGE="Flake checks for $REPO_NAME on branch $BRANCH_NAME:%0A$CHECK_EMOJI Flake check: ${{ env.FLAKE_CHECK_STATUS }}%0A$INSTALL_EMOJI Flake install: ${{ env.FLAKE_INSTALL_STATUS }}"
-          fi
+          nix profile install .#thorium-avx2
 
-          MESSAGE+="%0A%0A<b>Flake Check Log:</b>%0A<pre>$FLAKE_CHECK_LOG</pre>"
-          MESSAGE+="%0A%0A<b>Flake Install Log:</b>%0A<pre>$FLAKE_INSTALL_LOG</pre>"
-          MESSAGE+="%0A%0AGenerated on $(TZ='Asia/Kolkata' date)"
+      - name: Remove thorium-avx2 profile
+        run: |
+          nix profile remove .#thorium-avx2
 
-          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" \
-            -d "chat_id=$CHAT_ID" \
-            -d "text=$MESSAGE" \
-            -d "parse_mode=HTML"
+      - name: Run flake install and capture logs
+        id: flake_install_sse3
+        run: |
+          nix profile install .#thorium-sse3
 
-      # This step will fail if any of the flake operations found errors
-      - name: Fail Workflow If Errors Detected
-        if: env.WORKFLOW_SHOULD_FAIL == 'true'
-        run: exit 1
+      - name: Remove thorium-sse3 profile
+        run: |
+          nix profile remove .#thorium-sse3
+
+      - name: Run flake install and capture logs
+        id: flake_install_sse4
+        run: |
+          nix profile install .#thorium-sse4
+
+      - name: Remove thorium-sse4 profile
+        run: |
+          nix profile remove .#thorium-sse4
