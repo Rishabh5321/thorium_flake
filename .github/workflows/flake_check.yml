@@ -41,7 +41,7 @@ jobs:
 
       - name: Remove thorium-avx profile
         run: |
-          nix profile remove .#thorium-avx
+          nix profile remove thorium-avx
 
       - name: Run flake install and capture logs
         id: flake_install_avx2
@@ -50,7 +50,7 @@ jobs:
 
       - name: Remove thorium-avx2 profile
         run: |
-          nix profile remove .#thorium-avx2
+          nix profile remove thorium-avx2
 
       - name: Run flake install and capture logs
         id: flake_install_sse3
@@ -59,7 +59,7 @@ jobs:
 
       - name: Remove thorium-sse3 profile
         run: |
-          nix profile remove .#thorium-sse3
+          nix profile remove thorium-sse3
 
       - name: Run flake install and capture logs
         id: flake_install_sse4
@@ -68,4 +68,4 @@ jobs:
 
       - name: Remove thorium-sse4 profile
         run: |
-          nix profile remove .#thorium-sse4
+          nix profile remove thorium-sse4
