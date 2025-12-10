@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - "main"
     tags-ignore:
-      - 'update'
+      - "update"
 
 jobs:
   nix-format-lint:
@@ -17,34 +17,35 @@ jobs:
       pull-requests: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
-    - name: Install Nix
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixos-unstable
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
 
-    - name: Install Nix Linting and Formatting Tools
-      run: |
-        nix-channel --update
-        nix-env -i statix nixpkgs-fmt -f '<nixpkgs>'
-      env:
-        NIX_PATH: nixpkgs=channel:nixos-unstable
+      - name: Install Nix Linting and Formatting Tools
+        run: |
+          nix-channel --update
+          nix-env -i statix nixpkgs-fmt -f '<nixpkgs>'
+        env:
+          NIX_PATH: nixpkgs=channel:nixos-unstable
 
-    - name: Run Statix Lint
-      run: statix fix
+      - name: Run Statix Lint
+        run: statix fix
 
-    - name: Run Nix Format
-      run: nixpkgs-fmt .
-    
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v8
-      with:
-        commit-message: 'chore: auto lint and format'
-        title: 'Auto Lint and Format'
-        body: 'This is an auto-generated PR with linting and formatting changes.'
-        branch: auto-lint-format
-        delete-branch: true
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        
+      - name: Run Nix Format
+        run: nixpkgs-fmt .
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: "chore: auto lint and format"
+          title: "Auto Lint and Format"
+          body: "This is an auto-generated PR with linting and formatting changes."
+          branch: auto-lint-format
+          delete-branch: true
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}

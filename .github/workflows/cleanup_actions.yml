@@ -1,14 +1,14 @@
 name: "Cleanup Old Workflow Runs"
-concurrency: "cleanup-workflow"  # Prevents overlapping runs
+concurrency: "cleanup-workflow" # Prevents overlapping runs
 permissions:
   contents: write
   pull-requests: write
   actions: write # Add this line
-  
+
 on:
   schedule:
-    - cron: "0 0 * * *"  
-  workflow_dispatch:  # Allow manual triggers
+    - cron: "0 0 * * *"
+  workflow_dispatch: # Allow manual triggers
 
 jobs:
   cleanup:
@@ -17,7 +17,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
         with:
-          ref: main  # Ensures the latest version of the script is used
+          ref: main # Ensures the latest version of the script is used
+          persist-credentials: false
 
       - name: Install Nix (with Cachix support)
         uses: DeterminateSystems/nix-installer-action@main
@@ -32,8 +33,8 @@ jobs:
 
       - name: Run Cleanup Script
         env:
-          GITHUB_REPOSITORY: ${{ github.repository }}  # Auto-resolves to current repo
-          GH_TOKEN: ${{ github.token }}  # Required for GitHub API access
+          GITHUB_REPOSITORY: ${{ github.repository }} # Auto-resolves to current repo
+          GH_TOKEN: ${{ github.token }} # Required for GitHub API access
         run: |
           chmod +x ./scripts/clean_actions.nu  # Ensure executable
           nu ./scripts/clean_actions.nu  # Execute the Nushell script

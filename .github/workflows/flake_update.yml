@@ -16,6 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           sparse-checkout: flake.lock
       - id: get-flake-inputs
         run: |
@@ -39,6 +40,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           lfs: false
+          persist-credentials: false
 
       # Generate a GitHub App token for creating the PR
       - name: Generate App Token

@@ -17,4 +17,5 @@ jobs:
           name: "Rishabh5321/thorium_flake"
           rolling: true
           visibility: "public"
-          include-output-paths: true
+          include-output-paths: true'
+          persist-credentials: false
