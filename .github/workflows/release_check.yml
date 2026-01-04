@@ -67,8 +67,30 @@ jobs:
             echo "Thorium is up-to-date ($CURRENT_VERSION)."
             echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
           else
-            echo "Update needed: $CURRENT_VERSION -> $LATEST_VERSION"
-            echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
+            # Check if all required AppImage assets exist
+            echo "Checking for AppImage assets..."
+            ASSETS=$(gh api repos/Alex313031/thorium/releases/latest --jq '.assets[].name')
+            
+            MISSING_ASSETS=false
+            VARIANTS=("AVX" "AVX2" "SSE3" "SSE4")
+            
+            for VARIANT in "${VARIANTS[@]}"; do
+              EXPECTED_ASSET="Thorium_Browser_${LATEST_VERSION}_${VARIANT}.AppImage"
+              if echo "$ASSETS" | grep -q "$EXPECTED_ASSET"; then
+                echo "Found asset: $EXPECTED_ASSET"
+              else
+                echo "::warning::Missing asset: $EXPECTED_ASSET"
+                MISSING_ASSETS=true
+              fi
+            done
+
+            if [ "$MISSING_ASSETS" = "true" ]; then
+               echo "One or more required AppImages are missing. Skipping update."
+               echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
+            else
+               echo "All assets found. Update needed: $CURRENT_VERSION -> $LATEST_VERSION"
+               echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
+            fi
           fi
 
       - name: Check for existing Pull Request
