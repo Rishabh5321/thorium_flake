@@ -173,7 +173,7 @@ jobs:
           base: main
 
       - name: Enable Automerge
-        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false'
+        if: env.UPDATE_NEEDED == 'true' && env.PR_EXISTS == 'false' && steps.create_pr.outputs.pull-request-number
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ steps.generate_token.outputs.token }}
