@@ -154,7 +154,8 @@ jobs:
             
             # Use sed to replace the hash for this specific variant
             # Logic: Find line containing the Variant's AppImage URL, then update the *next* line starting with 'hash ='
-            sed -i -E "/_${VARIANT}\.AppImage/ { n; s/hash = \".*\";/hash = \"sha256-${NEW_HASH}\";/ }" flake.nix
+            # Using | as delimiter because base64 hashes can contain /
+            sed -i -E "/_${VARIANT}\.AppImage/ { n; s|hash = \".*\";|hash = \"sha256-${NEW_HASH}\";| }" flake.nix
           done
 
       - name: Configure Git
