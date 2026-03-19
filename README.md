@@ -1,5 +1,10 @@
 # Thorium Flake
 
+> [!WARNING]
+> **This repository is going to be archived.**
+> The package is being moved to [Rishabh5321/custom-packages-flake](https://github.com/Rishabh5321/custom-packages-flake).
+> Please visit the new repository for future updates and support.
+
 [![NixOS](https://img.shields.io/badge/NixOS-supported-blue.svg)](https://nixos.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![flake_check](https://github.com/Rishabh5321/thorium_flake/actions/workflows/flake_check.yml/badge.svg)](https://github.com/Rishabh5321/thorium_flake/actions/workflows/flake_check.yml)
